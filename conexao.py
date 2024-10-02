@@ -22,7 +22,7 @@ class ConexaoSingleton(Conexao):
     def _create_engine():
         """Método estático para criar o engine SQLAlchemy."""
         user = 'root'
-        password = urllib.parse.quote_plus('senai@123')
+        password = urllib.parse.quote_plus('')
         host = 'localhost'
         database = 'schooltracker'
         connection_string = f'mysql+pymysql://{user}:{password}@{host}/{database}'
