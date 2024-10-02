@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}Detalhes do Aluno{% endblock %}
+{% block body_class %}body-detalhe{% endblock %}
+
+{% block content %}
+<div class="container espacamento">
+    <div class="row justify-content-center align-items-center" style="margin-top: 8%; margin-bottom: 70px;">
+        <div class="col-md-10 caixa-forms">
+            <h2 class="text-center">{{ aluno.nome }}</h2>
+            <p><strong>RA:</strong> {{ aluno.ra }}</p>
+            <form action="{{ url_for('adicionar_diario', ra=aluno.ra) }}" method="POST">
+                <div class="form-group">
+                    <label for="texto">Escreva seu diário de bordo:</label>
+                    <div class="input-group">
+                        <textarea id="texto" name="texto" class="form-control" rows="5" required></textarea>
+                        <div class="input-group-append">
+                            <button id="microphone-btn" type="button" class="btn btn-outline-secondary">
+                                <i class="fa fa-microphone"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success btn-block">Adicionar Diário</button>
+            </form>
+
+            <br>
+
+            <ul class="list-group">
+                {% if diariobordo %}
+                    {% for diario in diariobordo %}
+                        <li class="list-group-item">
+                            <strong>{{ diario.datahora.strftime('%d/%m/%Y %H:%M') }}</strong>: <br> {{ diario.texto }}
+                        </li>
+                    {% endfor %}
+                {% else %}
+                    <li class="list-group-item">Nenhuma entrada registrada.</li>
+                {% endif %}
+            </ul>
+
+            <br>
+
+            <div class="text-center">
+                <a href="{{ url_for('index') }}" class="btn btn-secondary">Voltar</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const textarea = document.getElementById('texto');
+    const microphoneButton = document.getElementById('microphone-btn');
+
+    if ('webkitSpeechRecognition' in window) {
+        const recognition = new webkitSpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = 'pt-BR';
+
+        microphoneButton.addEventListener('click', () => {
+            recognition.start();
+            microphoneButton.disabled = true; // Desativar o botão durante a gravação
+        });
+
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            textarea.value += transcript + ' ';
+        };
+
+        recognition.onerror = (event) => {
+            console.error('Ocorreu um erro no reconhecimento: ' + event.error);
+            microphoneButton.disabled = false; // Reativar o botão em caso de erro
+        };
+
+        recognition.onend = () => {
+            console.log('Serviço de reconhecimento de voz desconectado');
+            microphoneButton.disabled = false; // Reativar o botão após a gravação
+        };
+    } else {
+        console.warn('O reconhecimento de fala não é suportado neste navegador.');
+    }
+</script>
+{% endblock %}
