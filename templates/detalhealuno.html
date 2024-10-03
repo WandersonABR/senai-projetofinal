@@ -53,7 +53,7 @@
 
     if ('webkitSpeechRecognition' in window) {
         const recognition = new webkitSpeechRecognition();
-        recognition.continuous = false;
+        recognition.continuous = true; // Permitir reconhecimento contínuo
         recognition.interimResults = false;
         recognition.lang = 'pt-BR';
 
@@ -63,7 +63,7 @@
         });
 
         recognition.onresult = (event) => {
-            const transcript = event.results[0][0].transcript;
+            const transcript = event.results[event.results.length - 1][0].transcript; // Pega o último resultado
             textarea.value += transcript + ' ';
         };
 
@@ -80,4 +80,5 @@
         console.warn('O reconhecimento de fala não é suportado neste navegador.');
     }
 </script>
+
 {% endblock %}
